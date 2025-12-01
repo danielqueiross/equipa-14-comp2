@@ -29,7 +29,6 @@ public class MainClient {
             int option = Integer.parseInt(sc.nextLine());
 
             switch (option) {
-
                 case 1 -> {
                     System.out.print("Nome: ");
                     String nome = sc.nextLine();
@@ -240,7 +239,6 @@ public class MainClient {
                         System.out.println("Erro: " + e.getMessage());
                     }
                 }
-
                 case 8 -> {
                     try {
                         String resp = rest.getForObject(BASE_URL + "/utilizadores", String.class);
