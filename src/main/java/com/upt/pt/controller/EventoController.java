@@ -1,10 +1,13 @@
 package com.upt.pt.controller;
 
+import com.upt.pt.dto.EventoDTO;
 import com.upt.pt.entity.Evento;
+import com.upt.pt.mapper.EventoMapper;
 import com.upt.pt.service.EventoService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/eventos")
@@ -17,23 +20,31 @@ public class EventoController {
     }
 
     @GetMapping
-    public List<Evento> getAll() {
-        return eventoService.getAll();
+    public List<EventoDTO> getAll() {
+        List<Evento> list = eventoService.getAll();
+        return list.stream()
+                .map(EventoMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Evento getById(@PathVariable Long id) {
-        return eventoService.getById(id);
+    public EventoDTO getById(@PathVariable Long id) {
+        Evento e = eventoService.getById(id);
+        return EventoMapper.toDTO(e);
     }
 
     @PostMapping
-    public Evento create(@RequestBody Evento e) {
-        return eventoService.create(e);
+    public EventoDTO create(@RequestBody EventoDTO dto) {
+        Evento entity = EventoMapper.toEntity(dto);
+        Evento saved = eventoService.create(entity);
+        return EventoMapper.toDTO(saved);
     }
 
     @PutMapping("/{id}")
-    public Evento update(@PathVariable Long id, @RequestBody Evento e) {
-        return eventoService.update(id, e);
+    public EventoDTO update(@PathVariable Long id, @RequestBody EventoDTO dto) {
+        Evento entity = EventoMapper.toEntity(dto);
+        Evento updated = eventoService.update(id, entity);
+        return EventoMapper.toDTO(updated);
     }
 
     @DeleteMapping("/{id}")
