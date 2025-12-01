@@ -14,7 +14,7 @@ public class MainClient {
     public static void main(String[] args) {
 
         while (true) {
-            System.out.println("\n  EVENTOS API CLIENT MENU ");
+            System.out.println("\n=== EVENTOS API CLIENT MENU ===");
             System.out.println("1. Criar Utilizador");
             System.out.println("2. Criar Tipo de Evento");
             System.out.println("3. Criar Evento");
@@ -29,7 +29,6 @@ public class MainClient {
             int option = Integer.parseInt(sc.nextLine());
 
             switch (option) {
-
 
                 case 1 -> {
                     System.out.print("Nome: ");
@@ -67,7 +66,198 @@ public class MainClient {
                         System.out.println("Erro: " + e.getMessage());
                     }
                 }
+                case 2 -> {
+                    System.out.print("Nome do Tipo: ");
+                    String nomeTipo = sc.nextLine();
+
+                    String json = "{ \"nome\": \"%s\" }".formatted(nomeTipo);
+
+                    HttpHeaders h = new HttpHeaders();
+                    h.setContentType(MediaType.APPLICATION_JSON);
+                    HttpEntity<String> req = new HttpEntity<>(json, h);
+
+                    try {
+                        String resp = rest.postForObject(
+                                BASE_URL + "/tipos",
+                                req,
+                                String.class
+                        );
+                        System.out.println("Tipo criado:");
+                        System.out.println(resp);
+
+                    } catch (Exception e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                }
+                case 3 -> {
+                    System.out.print("Organizador ID: ");
+                    long orgId = Long.parseLong(sc.nextLine());
+
+                    System.out.print("Tipo ID: ");
+                    long tipoId = Long.parseLong(sc.nextLine());
+
+                    System.out.print("Título: ");
+                    String titulo = sc.nextLine();
+
+                    System.out.print("Descrição: ");
+                    String descricao = sc.nextLine();
+
+                    System.out.print("Data (AAAA-MM-DD): ");
+                    String data = sc.nextLine();
+
+                    System.out.print("Lotação Máxima: ");
+                    int lot = Integer.parseInt(sc.nextLine());
+
+                    String json = """
+                            {
+                              "titulo": "%s",
+                              "descricao": "%s",
+                              "data": "%s",
+                              "lotacaoMax": %d
+                            }
+                            """.formatted(titulo, descricao, data, lot);
+
+                    HttpHeaders h = new HttpHeaders();
+                    h.setContentType(MediaType.APPLICATION_JSON);
+
+                    HttpEntity<String> req = new HttpEntity<>(json, h);
+
+                    String url = BASE_URL +
+                            "/gestao-eventos/eventos?organizadorId=" +
+                            orgId + "&tipoId=" + tipoId;
+
+                    try {
+                        String resp = rest.postForObject(url, req, String.class);
+                        System.out.println("Evento criado:");
+                        System.out.println(resp);
+                    } catch (Exception e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                }
+                case 4 -> {
+                    System.out.print("ID do evento: ");
+                    long eventoId = Long.parseLong(sc.nextLine());
+
+                    System.out.print("ID do gestor: ");
+                    long gestorId = Long.parseLong(sc.nextLine());
+
+                    String json = "{ \"gestorId\": %d }".formatted(gestorId);
+
+                    HttpHeaders h = new HttpHeaders();
+                    h.setContentType(MediaType.APPLICATION_JSON);
+
+                    HttpEntity<String> req = new HttpEntity<>(json, h);
+
+                    try {
+                        String resp = rest.postForObject(
+                                BASE_URL + "/gestao-eventos/eventos/" + eventoId + "/aprovar",
+                                req,
+                                String.class
+                        );
+                        System.out.println("Evento aprovado:");
+                        System.out.println(resp);
+                    } catch (Exception e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                }
+                case 5 -> {
+                    System.out.print("ID do evento: ");
+                    long eventoId = Long.parseLong(sc.nextLine());
+
+                    System.out.print("ID do gestor: ");
+                    long gestorId = Long.parseLong(sc.nextLine());
+
+                    System.out.print("Motivo: ");
+                    String motivo = sc.nextLine();
+
+                    String json = """
+                            {
+                              "gestorId": %d,
+                              "motivo": "%s"
+                            }
+                            """.formatted(gestorId, motivo);
+
+                    HttpHeaders h = new HttpHeaders();
+                    h.setContentType(MediaType.APPLICATION_JSON);
+                    HttpEntity<String> req = new HttpEntity<>(json, h);
+
+                    try {
+                        String resp = rest.postForObject(
+                                BASE_URL + "/gestao-eventos/eventos/" + eventoId + "/rejeitar",
+                                req,
+                                String.class
+                        );
+                        System.out.println("Evento rejeitado:");
+                        System.out.println(resp);
+                    } catch (Exception e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                }
+                case 6 -> {
+                    System.out.print("ID Estudante: ");
+                    long estudanteId = Long.parseLong(sc.nextLine());
+
+                    System.out.print("ID Evento: ");
+                    long eventoId = Long.parseLong(sc.nextLine());
+
+                    System.out.print("Nome Participante: ");
+                    String nomeP = sc.nextLine();
+
+                    System.out.print("Email: ");
+                    String emailP = sc.nextLine();
+
+                    String json = """
+                            {
+                              "estudanteId": %d,
+                              "eventoId": %d,
+                              "nomeParticipante": "%s",
+                              "email": "%s"
+                            }
+                            """.formatted(estudanteId, eventoId, nomeP, emailP);
+
+                    HttpHeaders h = new HttpHeaders();
+                    h.setContentType(MediaType.APPLICATION_JSON);
+                    HttpEntity<String> req = new HttpEntity<>(json, h);
+
+                    try {
+                        String resp = rest.postForObject(
+                                BASE_URL + "/gestao-eventos/inscricoes",
+                                req,
+                                String.class
+                        );
+                        System.out.println("Inscrição criada:");
+                        System.out.println(resp);
+                    } catch (Exception e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                }
+                case 7 -> {
+                    try {
+                        String resp = rest.getForObject(BASE_URL + "/eventos", String.class);
+                        System.out.println("\nEventos:");
+                        System.out.println(resp);
+                    } catch (Exception e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                }
+
+                case 8 -> {
+                    try {
+                        String resp = rest.getForObject(BASE_URL + "/utilizadores", String.class);
+                        System.out.println("\nUtilizadores:");
+                        System.out.println(resp);
+                    } catch (Exception e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                }
+
+                case 0 -> {
+                    System.out.println("A sair...");
+                    return;
+                }
+
+                default -> System.out.println("Opção inválida!");
             }
-          }
         }
     }
+}
