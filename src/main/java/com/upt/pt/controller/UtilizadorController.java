@@ -1,12 +1,13 @@
 package com.upt.pt.controller;
 
+import com.upt.pt.dto.UtilizadorDTO;
 import com.upt.pt.entity.Utilizador;
+import com.upt.pt.mapper.UtilizadorMapper;
 import com.upt.pt.service.UtilizadorService;
-
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/utilizadores")
@@ -19,23 +20,31 @@ public class UtilizadorController {
     }
 
     @GetMapping
-    public List<Utilizador> getAll() {
-        return utilizadorService.getAll();
+    public List<UtilizadorDTO> getAll() {
+        List<Utilizador> entities = utilizadorService.getAll();
+        return entities.stream()
+                .map(UtilizadorMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Utilizador getById(@PathVariable Long id) {
-        return utilizadorService.getById(id);
+    public UtilizadorDTO getById(@PathVariable Long id) {
+        Utilizador u = utilizadorService.getById(id);
+        return UtilizadorMapper.toDTO(u);
     }
 
     @PostMapping
-    public Utilizador create(@RequestBody Utilizador u) {
-        return utilizadorService.create(u);
+    public UtilizadorDTO create(@RequestBody UtilizadorDTO dto) {
+        Utilizador entity = UtilizadorMapper.toEntity(dto);
+        Utilizador saved = utilizadorService.create(entity);
+        return UtilizadorMapper.toDTO(saved);
     }
 
     @PutMapping("/{id}")
-    public Utilizador update(@PathVariable Long id, @RequestBody Utilizador u) {
-        return utilizadorService.update(id, u);
+    public UtilizadorDTO update(@PathVariable Long id, @RequestBody UtilizadorDTO dto) {
+        Utilizador entity = UtilizadorMapper.toEntity(dto);
+        Utilizador updated = utilizadorService.update(id, entity);
+        return UtilizadorMapper.toDTO(updated);
     }
 
     @DeleteMapping("/{id}")

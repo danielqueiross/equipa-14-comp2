@@ -16,7 +16,7 @@ public class GestaoEventos {
         this.factory = new Configuration().configure().buildSessionFactory();
     }
 
-    // ---------- AUXILIARES DE VALIDAÇÃO ----------
+    // AUXILIARES DE VALIDAÇÃO
 
     private boolean validarEmailPorTipo(String email, String tipo) {
         return switch (tipo.toLowerCase()) {
@@ -34,7 +34,7 @@ public class GestaoEventos {
         return "desconhecido";
     }
 
-    // --------------- CRUD UTILIZADOR ---------------
+    // CRUD UTILIZADOR
 
     public Utilizador registarUtilizador(String nome, String email, String password, String tipo) {
 
@@ -116,7 +116,7 @@ public class GestaoEventos {
         }
     }
 
-    // --------------- CRUD TIPO ---------------
+    // CRUD TIPO 
 
     public Tipo criarTipo(String nome) {
         Tipo t = new Tipo(nome);
@@ -148,8 +148,7 @@ public class GestaoEventos {
         }
     }
 
-    // --------------- CRUD EVENTO ---------------
-
+    //  CRUD EVENTO 
     public Evento criarEvento(String titulo, String descricao, LocalDate data, int lotacaoMax,
                               String nomeTipo, int idOrganizador) {
         try (Session session = factory.openSession()) {
@@ -235,7 +234,7 @@ public class GestaoEventos {
         }
     }
 
-    // --------- MÉTODOS DO GESTOR PARA EVENTOS ---------
+    //MÉTODOS DO GESTOR PARA EVENTOS
 
     public void aprovarEvento(int idEvento, int idGestor) {
         try (Session session = factory.openSession()) {
@@ -294,7 +293,7 @@ public class GestaoEventos {
         }
     }
 
-    // --------------- INSCRIÇÃO ---------------
+    // INSCRIÇÃO 
 
     public Inscricao fazerInscricao(int estudanteId, int eventoId, String nomeParticipante, String email) {
         try (Session session = factory.openSession()) {
@@ -350,7 +349,7 @@ public class GestaoEventos {
         }
     }
 
-    // --------------- AUTENTICAÇÃO ---------------
+    // AUTENTICAÇÃO 
 
     public Utilizador autenticarUtilizador(String email, String password) {
         try (Session session = factory.openSession()) {

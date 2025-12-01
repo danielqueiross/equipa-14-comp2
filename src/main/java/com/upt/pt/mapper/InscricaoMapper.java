@@ -5,6 +5,7 @@ import com.upt.pt.entity.Inscricao;
 
 public class InscricaoMapper {
 
+
     public static InscricaoDTO toDTO(Inscricao i) {
         if (i == null) return null;
 
@@ -13,8 +14,7 @@ public class InscricaoMapper {
                 i.getNomeParticipante(),
                 i.getEmail(),
                 i.getEstudante() != null ? (long) i.getEstudante().getId() : null,
-                i.getEvento() != null ? (long) i.getEvento().getId() : null
-        );
+                i.getEvento() != null ? (long) i.getEvento().getId() : null);
     }
 
     public static Inscricao toEntity(InscricaoDTO dto) {
@@ -23,7 +23,9 @@ public class InscricaoMapper {
         Inscricao i = new Inscricao();
         i.setNomeParticipante(dto.getNomeParticipante());
         i.setEmail(dto.getEmail());
-        // estudanteId e eventoId tratados no SERVICE
+
+     
+
         return i;
     }
 }

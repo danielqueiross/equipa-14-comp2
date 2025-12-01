@@ -1,11 +1,16 @@
 package com.upt.pt.controller;
 
+import com.upt.pt.dto.EventoDTO;
+import com.upt.pt.dto.InscricaoDTO;
 import com.upt.pt.entity.Evento;
 import com.upt.pt.entity.Inscricao;
+import com.upt.pt.mapper.EventoMapper;
+import com.upt.pt.mapper.InscricaoMapper;
 import com.upt.pt.service.GestaoEventosService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/gestao-eventos")
@@ -17,45 +22,59 @@ public class GestaoEventosController {
         this.gestaoEventosService = gestaoEventosService;
     }
 
-
+    // Criar evento (mesmo endpoint, agora com DTO no body)
     @PostMapping("/eventos")
-    public Evento criarEvento(@RequestParam Long organizadorId,
-                              @RequestParam Long tipoId,
-                              @RequestBody Evento dados) {
-        return gestaoEventosService.criarEvento(organizadorId, tipoId, dados);
+    public EventoDTO criarEvento(@RequestParam Long organizadorId,
+                                 @RequestParam Long tipoId,
+                                 @RequestBody EventoDTO dados) {
+
+        Evento entity = EventoMapper.toEntity(dados);
+        Evento created = gestaoEventosService.criarEvento(organizadorId, tipoId, entity);
+        return EventoMapper.toDTO(created);
     }
 
-    
+    // Aprovar evento (mesmo endpoint, continua a receber gestorId por query param)
     @PostMapping("/eventos/{eventoId}/aprovar")
-    public Evento aprovarEvento(@PathVariable Long eventoId,
-                                @RequestParam Long gestorId) {
-        return gestaoEventosService.aprovarEvento(eventoId, gestorId);
+    public EventoDTO aprovarEvento(@PathVariable Long eventoId,
+                                   @RequestParam Long gestorId) {
+
+        Evento e = gestaoEventosService.aprovarEvento(eventoId, gestorId);
+        return EventoMapper.toDTO(e);
     }
 
+    // Rejeitar evento (mesmo endpoint, gestorId e motivo por query param)
     @PostMapping("/eventos/{eventoId}/rejeitar")
-    public Evento rejeitarEvento(@PathVariable Long eventoId,
-                                 @RequestParam Long gestorId,
-                                 @RequestParam String motivo) {
-        return gestaoEventosService.rejeitarEvento(eventoId, gestorId, motivo);
+    public EventoDTO rejeitarEvento(@PathVariable Long eventoId,
+                                    @RequestParam Long gestorId,
+                                    @RequestParam String motivo) {
+
+        Evento e = gestaoEventosService.rejeitarEvento(eventoId, gestorId, motivo);
+        return EventoMapper.toDTO(e);
     }
 
-
+    // Listar eventos com pouca adesão
     @GetMapping("/eventos/pouca-adesao/{limite}")
-    public List<Evento> eventosPoucaAdesao(@PathVariable int limite) {
-        return gestaoEventosService.eventosComPoucaAdesao(limite);
+    public List<EventoDTO> eventosPoucaAdesao(@PathVariable int limite) {
+        List<Evento> list = gestaoEventosService.eventosComPoucaAdesao(limite);
+        return list.stream()
+                .map(EventoMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
+    // Faze inscrição (mesmo endpoint, mas usa DTO no corpo)
     @PostMapping("/inscricoes")
-    public Inscricao fazerInscricao(@RequestParam Long estudanteId,
-                                    @RequestParam Long eventoId,
-                                    @RequestBody Inscricao dados) {
+    public InscricaoDTO fazerInscricao(@RequestParam Long estudanteId,
+                                       @RequestParam Long eventoId,
+                                       @RequestBody InscricaoDTO dados) {
 
-        return gestaoEventosService.fazerInscricao(
+        Inscricao i = gestaoEventosService.fazerInscricao(
                 estudanteId,
                 eventoId,
                 dados.getNomeParticipante(),
                 dados.getEmail()
         );
+
+        return InscricaoMapper.toDTO(i);
     }
 
     @DeleteMapping("/inscricoes/{id}")

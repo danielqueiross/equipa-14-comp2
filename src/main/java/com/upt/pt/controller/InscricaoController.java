@@ -1,10 +1,13 @@
 package com.upt.pt.controller;
 
+import com.upt.pt.dto.InscricaoDTO;
 import com.upt.pt.entity.Inscricao;
+import com.upt.pt.mapper.InscricaoMapper;
 import com.upt.pt.service.InscricaoService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/inscricoes")
@@ -17,23 +20,31 @@ public class InscricaoController {
     }
 
     @GetMapping
-    public List<Inscricao> getAll() {
-        return inscricaoService.getAll();
+    public List<InscricaoDTO> getAll() {
+        List<Inscricao> list = inscricaoService.getAll();
+        return list.stream()
+                .map(InscricaoMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Inscricao getById(@PathVariable Long id) {
-        return inscricaoService.getById(id);
+    public InscricaoDTO getById(@PathVariable Long id) {
+        Inscricao i = inscricaoService.getById(id);
+        return InscricaoMapper.toDTO(i);
     }
 
     @PostMapping
-    public Inscricao create(@RequestBody Inscricao i) {
-        return inscricaoService.create(i);
+    public InscricaoDTO create(@RequestBody InscricaoDTO dto) {
+        Inscricao entity = InscricaoMapper.toEntity(dto);
+        Inscricao saved = inscricaoService.create(entity);
+        return InscricaoMapper.toDTO(saved);
     }
 
     @PutMapping("/{id}")
-    public Inscricao update(@PathVariable Long id, @RequestBody Inscricao i) {
-        return inscricaoService.update(id, i);
+    public InscricaoDTO update(@PathVariable Long id, @RequestBody InscricaoDTO dto) {
+        Inscricao entity = InscricaoMapper.toEntity(dto);
+        Inscricao updated = inscricaoService.update(id, entity);
+        return InscricaoMapper.toDTO(updated);
     }
 
     @DeleteMapping("/{id}")
