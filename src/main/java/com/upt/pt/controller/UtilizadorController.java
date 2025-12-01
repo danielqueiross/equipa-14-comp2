@@ -21,8 +21,8 @@ public class UtilizadorController {
 
     @GetMapping
     public List<UtilizadorDTO> getAll() {
-        List<Utilizador> entities = utilizadorService.getAll();
-        return entities.stream()
+        return utilizadorService.getAll()
+                .stream()
                 .map(UtilizadorMapper::toDTO)
                 .collect(Collectors.toList());
     }

@@ -53,14 +53,11 @@ public class GestaoEventosController {
     }
 
     // Listar eventos com pouca adesão
-    @GetMapping("/eventos/pouca-adesao/{limite}")
-    public List<EventoDTO> eventosPoucaAdesao(@PathVariable int limite) {
-        List<Evento> list = gestaoEventosService.eventosComPoucaAdesao(limite);
-        return list.stream()
-                .map(EventoMapper::toDTO)
-                .collect(Collectors.toList());
+    @GetMapping("/eventos/pouca-adesao")
+    public List<Evento> eventosPoucaAdesao() {
+        return gestaoEventosService.eventosComPoucaAdesao();
     }
-
+    
     // Faze inscrição (mesmo endpoint, mas usa DTO no corpo)
     @PostMapping("/inscricoes")
     public InscricaoDTO fazerInscricao(@RequestParam Long estudanteId,

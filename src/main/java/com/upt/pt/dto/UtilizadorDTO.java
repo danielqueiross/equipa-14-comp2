@@ -1,18 +1,21 @@
 package com.upt.pt.dto;
 
 public class UtilizadorDTO {
+
     private Long id;
     private String nome;
     private String email;
     private String password;
+    private String tipo; 
 
     public UtilizadorDTO() {}
 
-    public UtilizadorDTO(Long id, String nome, String email, String password) {
+    public UtilizadorDTO(Long id, String nome, String email, String password, String tipo) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.password = password;
+        this.tipo = tipo;
     }
 
     public Long getId() { return id; }
@@ -26,4 +29,7 @@ public class UtilizadorDTO {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
 }

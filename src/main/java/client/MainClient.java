@@ -23,48 +23,56 @@ public class MainClient {
             System.out.println("6. Inscrever Estudante");
             System.out.println("7. Listar Eventos");
             System.out.println("8. Listar Utilizadores");
+            System.out.println("9. Apagar Utilizador");
+            System.out.println("10. Apagar Evento");  
+            System.out.println("11. Listar Eventos com Pouca Aderência");
+            System.out.println("12. Cancelar Inscrição");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
             int option = Integer.parseInt(sc.nextLine());
 
             switch (option) {
-                case 1 -> {
-                    System.out.print("Nome: ");
-                    String nome = sc.nextLine();
+            case 1 -> {
+                System.out.print("Nome: ");
+                String nome = sc.nextLine();
 
-                    System.out.print("Email: ");
-                    String email = sc.nextLine();
+                System.out.print("Email: ");
+                String email = sc.nextLine();
 
-                    System.out.print("Password: ");
-                    String pass = sc.nextLine();
+                System.out.print("Password: ");
+                String pass = sc.nextLine();
 
-                    String json = """
-                            {
-                              "nome": "%s",
-                              "email": "%s",
-                              "password": "%s"
-                            }
-                            """.formatted(nome, email, pass);
+                System.out.print("Tipo (estudante / organizador / gestor): ");
+                String tipo = sc.nextLine();
 
-                    HttpHeaders h = new HttpHeaders();
-                    h.setContentType(MediaType.APPLICATION_JSON);
-
-                    HttpEntity<String> req = new HttpEntity<>(json, h);
-
-                    try {
-                        String response = rest.postForObject(
-                                BASE_URL + "/utilizadores",
-                                req,
-                                String.class
-                        );
-                        System.out.println("Utilizador criado:");
-                        System.out.println(response);
-
-                    } catch (Exception e) {
-                        System.out.println("Erro: " + e.getMessage());
-                    }
+                String json = """
+                {
+                  "nome": "%s",
+                  "email": "%s",
+                  "password": "%s",
+                  "tipo": "%s"
                 }
+                """.formatted(nome, email, pass, tipo);
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+                try {
+                    String response = rest.postForObject(
+                            BASE_URL + "/utilizadores",
+                            request,
+                            String.class
+                    );
+                    System.out.println("\nUtilizador criado:");
+                    System.out.println(response);
+
+                } catch (Exception e) {
+                    System.out.println("Erro ao criar utilizador: " + e.getMessage());
+                }
+               }
                 case 2 -> {
                     System.out.print("Nome do Tipo: ");
                     String nomeTipo = sc.nextLine();
@@ -140,21 +148,13 @@ public class MainClient {
                     System.out.print("ID do gestor: ");
                     long gestorId = Long.parseLong(sc.nextLine());
 
-                    String json = "{ \"gestorId\": %d }".formatted(gestorId);
-
-                    HttpHeaders h = new HttpHeaders();
-                    h.setContentType(MediaType.APPLICATION_JSON);
-
-                    HttpEntity<String> req = new HttpEntity<>(json, h);
+                    String url = BASE_URL + "/gestao-eventos/eventos/" + eventoId + "/aprovar?gestorId=" + gestorId;
 
                     try {
-                        String resp = rest.postForObject(
-                                BASE_URL + "/gestao-eventos/eventos/" + eventoId + "/aprovar",
-                                req,
-                                String.class
-                        );
-                        System.out.println("Evento aprovado:");
-                        System.out.println(resp);
+                        String response = rest.postForObject(url, null, String.class);
+                        System.out.println("\nEvento aprovado:");
+                        System.out.println(response);
+
                     } catch (Exception e) {
                         System.out.println("Erro: " + e.getMessage());
                     }
@@ -169,25 +169,15 @@ public class MainClient {
                     System.out.print("Motivo: ");
                     String motivo = sc.nextLine();
 
-                    String json = """
-                            {
-                              "gestorId": %d,
-                              "motivo": "%s"
-                            }
-                            """.formatted(gestorId, motivo);
-
-                    HttpHeaders h = new HttpHeaders();
-                    h.setContentType(MediaType.APPLICATION_JSON);
-                    HttpEntity<String> req = new HttpEntity<>(json, h);
+                    String url = BASE_URL + "/gestao-eventos/eventos/" + eventoId
+                            + "/rejeitar?gestorId=" + gestorId
+                            + "&motivo=" + motivo.replace(" ", "%20");
 
                     try {
-                        String resp = rest.postForObject(
-                                BASE_URL + "/gestao-eventos/eventos/" + eventoId + "/rejeitar",
-                                req,
-                                String.class
-                        );
-                        System.out.println("Evento rejeitado:");
-                        System.out.println(resp);
+                        String response = rest.postForObject(url, null, String.class);
+                        System.out.println("\nEvento rejeitado:");
+                        System.out.println(response);
+
                     } catch (Exception e) {
                         System.out.println("Erro: " + e.getMessage());
                     }
@@ -206,26 +196,25 @@ public class MainClient {
                     String emailP = sc.nextLine();
 
                     String json = """
-                            {
-                              "estudanteId": %d,
-                              "eventoId": %d,
-                              "nomeParticipante": "%s",
-                              "email": "%s"
-                            }
-                            """.formatted(estudanteId, eventoId, nomeP, emailP);
+                    {
+                      "nomeParticipante": "%s",
+                      "email": "%s"
+                    }
+                    """.formatted(nomeP, emailP);
 
-                    HttpHeaders h = new HttpHeaders();
-                    h.setContentType(MediaType.APPLICATION_JSON);
-                    HttpEntity<String> req = new HttpEntity<>(json, h);
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_JSON);
+
+                    HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+                    String url = BASE_URL + "/gestao-eventos/inscricoes?estudanteId=" 
+                                 + estudanteId + "&eventoId=" + eventoId;
 
                     try {
-                        String resp = rest.postForObject(
-                                BASE_URL + "/gestao-eventos/inscricoes",
-                                req,
-                                String.class
-                        );
-                        System.out.println("Inscrição criada:");
-                        System.out.println(resp);
+                        String response = rest.postForObject(url, request, String.class);
+                        System.out.println("\nInscrição criada:");
+                        System.out.println(response);
+
                     } catch (Exception e) {
                         System.out.println("Erro: " + e.getMessage());
                     }
@@ -248,7 +237,56 @@ public class MainClient {
                         System.out.println("Erro: " + e.getMessage());
                     }
                 }
+                case 9 -> {
+                    System.out.print("ID do utilizador a apagar: ");
+                    long id = Long.parseLong(sc.nextLine());
 
+                    String url = BASE_URL + "/utilizadores/" + id;
+
+                    try {
+                        rest.delete(url);
+                        System.out.println("\nUtilizador apagado com sucesso!");
+                    } catch (Exception e) {
+                        System.out.println("Erro ao apagar utilizador: " + e.getMessage());
+                    }
+                }
+                case 10 -> {
+                    System.out.print("ID do evento a apagar: ");
+                    long id = Long.parseLong(sc.nextLine());
+
+                    String url = BASE_URL + "/eventos/" + id;
+
+                    try {
+                        rest.delete(url);
+                        System.out.println("\nEvento apagado com sucesso!");
+                    } catch (Exception e) {
+                        System.out.println("Erro ao apagar evento: " + e.getMessage());
+                    }
+                }
+                case 11 -> {
+                    String url = BASE_URL + "/gestao-eventos/eventos/pouca-adesao";
+
+                    try {
+                        String response = rest.getForObject(url, String.class);
+                        System.out.println("\nEventos com pouca adesão (< 50% da lotação):");
+                        System.out.println(response);
+                    } catch (Exception e) {
+                        System.out.println("Erro ao listar eventos com pouca adesão: " + e.getMessage());
+                    }
+                }
+                case 12 -> {
+                    System.out.print("ID da inscrição a cancelar: ");
+                    long id = Long.parseLong(sc.nextLine());
+
+                    String url = BASE_URL + "/gestao-eventos/inscricoes/" + id;
+
+                    try {
+                        rest.delete(url);
+                        System.out.println("\nInscrição cancelada com sucesso!");
+                    } catch (Exception e) {
+                        System.out.println("Erro ao cancelar inscrição: " + e.getMessage());
+                    }
+                }
                 case 0 -> {
                     System.out.println("A sair...");
                     return;

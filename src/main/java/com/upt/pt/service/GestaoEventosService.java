@@ -42,16 +42,14 @@ public class GestaoEventosService {
         this.inscricaoRepository = inscricaoRepository;
     }
 
-    // ----------------------------------------------------
     // Criar evento com ligação a Organizador + Tipo
-    // ----------------------------------------------------
     public Evento criarEvento(Long organizadorId, Long tipoId, Evento dados) {
 
         Optional<Organizador> optOrg = organizadorRepository.findById(organizadorId);
         Optional<Tipo> optTipo = tipoRepository.findById(tipoId);
 
         if (optOrg.isEmpty() || optTipo.isEmpty()) {
-            return null; // podias também lançar IllegalArgumentException
+            return null;
         }
 
         Organizador org = optOrg.get();
@@ -69,10 +67,8 @@ public class GestaoEventosService {
 
         return eventoRepository.save(e);
     }
-
-    // ----------------------------------------------------
     // Aprovar evento (só se existir gestor)
-    // ----------------------------------------------------
+
     public Evento aprovarEvento(Long eventoId, Long gestorId) {
 
         Optional<Gestor> optGestor = gestorRepository.findById(gestorId);
@@ -91,10 +87,7 @@ public class GestaoEventosService {
 
         return eventoRepository.save(e);
     }
-
-    // ----------------------------------------------------
     // Rejeitar evento com motivo
-    // ----------------------------------------------------
     public Evento rejeitarEvento(Long eventoId, Long gestorId, String motivo) {
 
         Optional<Gestor> optGestor = gestorRepository.findById(gestorId);
@@ -114,19 +107,15 @@ public class GestaoEventosService {
         return eventoRepository.save(e);
     }
 
-    // ----------------------------------------------------
     // Listar eventos com pouca adesão
-    // ----------------------------------------------------
-    public List<Evento> eventosComPoucaAdesao(int limite) {
-        List<Evento> todos = eventoRepository.findAll();
-        return todos.stream()
-                .filter(ev -> ev.getNumParticipantes() < limite)
-                .collect(Collectors.toList());
+    public List<Evento> eventosComPoucaAdesao() {
+        return eventoRepository.findAll()
+                .stream()
+                .filter(e -> e.getNumParticipantes() < (e.getLotaçãoMax() * 0.5))
+                .toList();
     }
 
-    // ----------------------------------------------------
     // Fazer inscrição (estudante + evento)
-    // ----------------------------------------------------
     public Inscricao fazerInscricao(Long estudanteId, Long eventoId,
                                     String nomeParticipante, String email) {
 
@@ -158,9 +147,7 @@ public class GestaoEventosService {
         return ins;
     }
 
-    // ----------------------------------------------------
     // Cancelar inscrição
-    // ----------------------------------------------------
     public boolean cancelarInscricao(Long inscricaoId) {
 
         Optional<Inscricao> optInsc = inscricaoRepository.findById(inscricaoId);
