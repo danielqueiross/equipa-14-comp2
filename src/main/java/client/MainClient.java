@@ -27,6 +27,7 @@ public class MainClient {
             System.out.println("10. Apagar Evento");  
             System.out.println("11. Listar Eventos com Pouca Aderência");
             System.out.println("12. Cancelar Inscrição");
+            System.out.println("13. Editar Evento");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
 
@@ -287,6 +288,46 @@ public class MainClient {
                         System.out.println("Erro ao cancelar inscrição: " + e.getMessage());
                     }
                 }
+                case 13 -> {
+                    System.out.print("ID do evento a editar: ");
+                    long idEv = Long.parseLong(sc.nextLine());
+
+                    System.out.print("Novo título: ");
+                    String novoTitulo = sc.nextLine();
+
+                    System.out.print("Nova descrição: ");
+                    String novaDescricao = sc.nextLine();
+
+                    System.out.print("Nova data (AAAA-MM-DD): ");
+                    String novaData = sc.nextLine();
+
+                    System.out.print("Nova lotação: ");
+                    int novaLotacao = Integer.parseInt(sc.nextLine());
+
+                    String json = """
+                    {
+                      "titulo": "%s",
+                      "descrição": "%s",
+                      "data": "%s",
+                      "lotacaoMax": %d
+                    }
+                    """.formatted(novoTitulo, novaDescricao, novaData, novaLotacao);
+
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_JSON);
+                    HttpEntity<String> request = new HttpEntity<>(json, headers);
+
+                    String url = BASE_URL + "/eventos/" + idEv;
+
+                    try {
+                        rest.exchange(url, HttpMethod.PUT, request, String.class);
+                        System.out.println("\nEvento atualizado com sucesso!");
+
+                    } catch (Exception e) {
+                        System.out.println("Erro ao editar evento: " + e.getMessage());
+                    }
+                }
+
                 case 0 -> {
                     System.out.println("A sair...");
                     return;

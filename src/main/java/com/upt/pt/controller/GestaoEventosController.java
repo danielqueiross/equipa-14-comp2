@@ -10,7 +10,6 @@ import com.upt.pt.service.GestaoEventosService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/gestao-eventos")
@@ -22,7 +21,7 @@ public class GestaoEventosController {
         this.gestaoEventosService = gestaoEventosService;
     }
 
-    // Criar evento (mesmo endpoint, agora com DTO no body)
+    // Criar evento
     @PostMapping("/eventos")
     public EventoDTO criarEvento(@RequestParam Long organizadorId,
                                  @RequestParam Long tipoId,
@@ -33,7 +32,7 @@ public class GestaoEventosController {
         return EventoMapper.toDTO(created);
     }
 
-    // Aprovar evento (mesmo endpoint, continua a receber gestorId por query param)
+    // Aprovar evento
     @PostMapping("/eventos/{eventoId}/aprovar")
     public EventoDTO aprovarEvento(@PathVariable Long eventoId,
                                    @RequestParam Long gestorId) {
@@ -42,7 +41,7 @@ public class GestaoEventosController {
         return EventoMapper.toDTO(e);
     }
 
-    // Rejeitar evento (mesmo endpoint, gestorId e motivo por query param)
+    // Rejeitar evento 
     @PostMapping("/eventos/{eventoId}/rejeitar")
     public EventoDTO rejeitarEvento(@PathVariable Long eventoId,
                                     @RequestParam Long gestorId,
@@ -58,7 +57,7 @@ public class GestaoEventosController {
         return gestaoEventosService.eventosComPoucaAdesao();
     }
     
-    // Faze inscrição (mesmo endpoint, mas usa DTO no corpo)
+    // Faz inscrição 
     @PostMapping("/inscricoes")
     public InscricaoDTO fazerInscricao(@RequestParam Long estudanteId,
                                        @RequestParam Long eventoId,
